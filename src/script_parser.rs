@@ -1,3 +1,6 @@
+pub mod interpret_escaped_str;
+use self::interpret_escaped_str::interpret_escaped_string;
+
 #[derive(Debug)]
 pub enum Command {
     Substitute {
@@ -61,6 +64,9 @@ pub fn parse_script(script: &str) -> Result<Command, ()> {
                     return Err(());
                 }
             }
+
+            let regexp = interpret_escaped_string(&regexp).map_err(|_| ())?;
+            let replacement = interpret_escaped_string(&replacement).map_err(|_| ())?;
 
             return Ok(Command::Substitute {
                 regexp,
