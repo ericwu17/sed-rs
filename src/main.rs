@@ -13,12 +13,12 @@ fn main() {
     let args = Args::parse();
 
     let contents = fs::read_to_string(&args.input_file).unwrap_or_else(|_| {
-        println!("Unable to open file: {}", args.input_file);
+        eprintln!("Unable to open file: {}", args.input_file);
         process::exit(1);
     });
 
     let script = parse_script(&args.script).unwrap_or_else(|()| {
-        println!("invalid command: {}", args.script);
+        eprintln!("invalid command: {}", args.script);
         process::exit(1);
     });
 

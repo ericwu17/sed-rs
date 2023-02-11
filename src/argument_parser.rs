@@ -8,9 +8,9 @@ use clap::Parser;
 #[command(version = "0.01")]
 #[command(about = "stream editor", long_about = None)]
 pub struct Args {
-    /// Name of the person to greet
+    /// Script to run on the input file
     pub script: String,
 
-    /// Number of times to greet
+    /// Path to input file
     pub input_file: String,
 }
