@@ -1,29 +1,22 @@
 use crate::script_parser::Command;
-use std::io::{self, Write};
+use std::io::{self, BufRead, Write};
 
-pub fn run_script(input_file: String, script: Command) {
-    let lines = input_file.split('\n');
-
+pub fn run_script(input_file: &mut Box<dyn BufRead>, script: Command) {
     match script {
         Command::Substitute {
             regexp,
             replacement,
             max_replacements,
         } => {
-            let mut is_first_line: bool = true;
-            for line in lines {
-                if !is_first_line {
-                    println!();
-                } else {
-                    is_first_line = false;
-                }
-
+            let mut line = String::new();
+            while input_file.read_line(&mut line).unwrap() != 0 {
                 write_bytes_with_replacements(
                     line.as_bytes(),
                     regexp.as_bytes(),
                     replacement.as_bytes(),
                     max_replacements,
                 );
+                line = String::new();
             }
             io::stdout().flush().unwrap()
         }

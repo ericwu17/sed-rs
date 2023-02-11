@@ -12,5 +12,5 @@ pub struct Args {
     pub script: String,
 
     /// Path to input file
-    pub input_file: String,
+    pub input_file: Option<String>,
 }
