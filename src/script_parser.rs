@@ -1,6 +1,10 @@
 #[derive(Debug)]
 pub enum Command {
-    Substitute { regexp: String, replacement: String },
+    Substitute {
+        regexp: String,
+        replacement: String,
+        max_replacements: Option<usize>,
+    },
 }
 
 pub fn parse_script(script: &str) -> Result<Command, ()> {
@@ -44,21 +48,24 @@ pub fn parse_script(script: &str) -> Result<Command, ()> {
                     None => return Err(()),
                 }
             }
+            let mut max_replacements: Option<usize> = Some(1);
 
-            loop {
-                // match additional flags (not yet implemented)
-                let c = remainder.next();
-                match c {
-                    Some(_) => {
-                        return Err(());
-                    }
-                    None => break,
+            // match additional flags (only options are 'g' for global or a whole number)
+            let remainder: String = remainder.collect();
+            if remainder == "g" {
+                max_replacements = None;
+            } else if let Ok(n) = remainder.parse::<usize>() {
+                max_replacements = Some(n);
+            } else {
+                if !remainder.is_empty() {
+                    return Err(());
                 }
             }
 
             return Ok(Command::Substitute {
                 regexp,
                 replacement,
+                max_replacements,
             });
         }
         _ => {
