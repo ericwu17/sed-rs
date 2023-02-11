@@ -14,9 +14,9 @@ pub fn parse_script(script: &str) -> Result<Command, ()> {
     if script.is_empty() {
         return Err(());
     }
-    match script.chars().nth(0) {
+    match script.chars().next() {
         None => {
-            return Err(());
+            Err(())
         }
         Some('s') => {
             let delimiter: char = script.chars().nth(1).ok_or(())?;
@@ -59,23 +59,21 @@ pub fn parse_script(script: &str) -> Result<Command, ()> {
                 max_replacements = None;
             } else if let Ok(n) = remainder.parse::<usize>() {
                 max_replacements = Some(n);
-            } else {
-                if !remainder.is_empty() {
-                    return Err(());
-                }
+            } else if !remainder.is_empty() {
+                return Err(());
             }
 
             let regexp = interpret_escaped_string(&regexp).map_err(|_| ())?;
             let replacement = interpret_escaped_string(&replacement).map_err(|_| ())?;
 
-            return Ok(Command::Substitute {
+            Ok(Command::Substitute {
                 regexp,
                 replacement,
                 max_replacements,
-            });
+            })
         }
         _ => {
-            return Err(());
+            Err(())
         }
     }
 }

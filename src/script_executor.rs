@@ -2,7 +2,7 @@ use crate::script_parser::Command;
 use std::io::{self, Write};
 
 pub fn run_script(input_file: String, script: Command) {
-    let lines = input_file.split("\n");
+    let lines = input_file.split('\n');
 
     match script {
         Command::Substitute {
@@ -13,7 +13,7 @@ pub fn run_script(input_file: String, script: Command) {
             let mut is_first_line: bool = true;
             for line in lines {
                 if !is_first_line {
-                    println!("");
+                    println!();
                 } else {
                     is_first_line = false;
                 }
@@ -41,14 +41,16 @@ fn write_bytes_with_replacements(
     let window_size: usize = search_for.len();
 
     if window_size > bytes.len() || max_replacements == Some(0) {
-        io::stdout().write(bytes).unwrap();
+        io::stdout().write_all(bytes).unwrap();
         return;
     }
 
     for i in 0..(bytes.len() - window_size + 1) {
         if &bytes[i..(i + window_size)] == search_for {
-            io::stdout().write(&bytes[prev_written_index..i]).unwrap();
-            io::stdout().write(replacement).unwrap();
+            io::stdout()
+                .write_all(&bytes[prev_written_index..i])
+                .unwrap();
+            io::stdout().write_all(replacement).unwrap();
             prev_written_index = i + window_size;
             num_replacements_performed += 1;
         }
@@ -59,5 +61,7 @@ fn write_bytes_with_replacements(
         }
     }
 
-    io::stdout().write(&bytes[prev_written_index..]).unwrap();
+    io::stdout()
+        .write_all(&bytes[prev_written_index..])
+        .unwrap();
 }
