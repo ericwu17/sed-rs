@@ -1,7 +1,9 @@
 pub mod argument_parser;
+pub mod script_executor;
 pub mod script_parser;
 use argument_parser::Args;
 use clap::Parser;
+use script_executor::run_script;
 use script_parser::parse_script;
 
 use std::fs;
@@ -20,7 +22,5 @@ fn main() {
         process::exit(1);
     });
 
-    dbg!(script);
-
-    println!("With text:\n{}", contents);
+    run_script(contents, script)
 }
