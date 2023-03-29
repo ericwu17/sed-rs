@@ -1,36 +1,28 @@
-use std::str::Chars;
-
 #[derive(Debug, PartialEq)]
 pub enum EscapeError {
     EscapeAtEndOfString,
     InvalidEscapedChar(char),
 }
 
-struct InterpretEscapedString<'a> {
-    s: Chars<'a>,
-}
+pub fn interpret_escaped_string(s: &str) -> Result<String, EscapeError> {
+    let mut result = String::new();
 
-impl<'a> Iterator for InterpretEscapedString<'a> {
-    type Item = Result<char, EscapeError>;
+    let mut s_iterator = s.chars();
 
-    fn next(&mut self) -> Option<Self::Item> {
-        let maybe_c = self.s.next();
-        match maybe_c {
-            Some(c) => match c {
-                '\\' => match self.s.next() {
-                    Some('t') => Some(Ok('\t')),
-                    Some('n') => Some(Ok('\n')),
-                    Some('\\') => Some(Ok('\\')),
-                    Some(c) => Some(Err(EscapeError::InvalidEscapedChar(c))),
-                    None => Some(Err(EscapeError::EscapeAtEndOfString)),
-                },
-                _ => Some(Ok(c)),
+    while let Some(char) = s_iterator.next() {
+        match char {
+            '\\' => match s_iterator.next() {
+                Some('t') => result += "\t",
+                Some('n') => result += "\n",
+                Some('\\') => result += "\\",
+                Some(c) => return Err(EscapeError::InvalidEscapedChar(c)),
+                None => return Err(EscapeError::EscapeAtEndOfString),
             },
-            None => None,
+            _ => {
+                result += char.to_string().as_str();
+            }
         }
     }
-}
 
-pub fn interpret_escaped_string(s: &str) -> Result<String, EscapeError> {
-    (InterpretEscapedString { s: s.chars() }).collect()
+    Ok(result)
 }
