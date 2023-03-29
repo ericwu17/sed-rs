@@ -37,14 +37,15 @@ fn write_bytes_with_replacements(
         io::stdout().write_all(bytes).unwrap();
         return;
     }
-
-    for i in 0..(bytes.len() - window_size + 1) {
+    let mut i = 0;
+    while i < bytes.len() - window_size + 1 {
         if &bytes[i..(i + window_size)] == search_for {
             io::stdout()
                 .write_all(&bytes[prev_written_index..i])
                 .unwrap();
             io::stdout().write_all(replacement).unwrap();
             prev_written_index = i + window_size;
+            i = i + window_size - 1;
             num_replacements_performed += 1;
         }
         if let Some(n) = max_replacements {
@@ -52,6 +53,7 @@ fn write_bytes_with_replacements(
                 break;
             }
         }
+        i += 1;
     }
 
     io::stdout()
